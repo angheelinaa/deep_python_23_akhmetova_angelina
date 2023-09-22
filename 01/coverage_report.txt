@@ -1,0 +1,16 @@
+Unittest coverage report for task_1: predict_message_mood
+Name                           Stmts   Miss  Cover   Missing
+------------------------------------------------------------
+predict_message_mood.py           20      2    90%   34-35
+test_predict_message_mood.py      86      0   100%
+------------------------------------------------------------
+TOTAL                            106      2    98%
+
+
+Unittest coverage report for task_2: generator_for_reading_and_filtering
+Name                                          Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------
+generator_for_reading_and_filtering.py           17      0   100%
+test_generator_for_reading_and_filtering.py      57      0   100%
+---------------------------------------------------------------------------
+TOTAL                                            74      0   100%
