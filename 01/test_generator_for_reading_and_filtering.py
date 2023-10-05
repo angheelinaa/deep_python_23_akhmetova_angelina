@@ -80,3 +80,54 @@ class TestGeneratorForReadingAndFiltering(unittest.TestCase):
 
         self.assertEqual("input filename or file object", str(err.exception))
         self.assertEqual(TypeError, type(err.exception))
+
+    def test_generator_for_reading_and_filtering_case_insensitivity(self):
+        file = "First line\nSecond line\nThird line"
+
+        with mock.patch('builtins.open', mock.mock_open(read_data=file)) as mock_file:
+
+            words = ["first", "second", "third"]
+            result = list(generator_for_reading_and_filtering(file, words))
+            self.assertEqual(["First line", "Second line", "Third line"], result)
+
+            words = ["FIRST", "THIRD"]
+            result = list(generator_for_reading_and_filtering(file, words))
+            self.assertEqual(["First line", "Third line"], result)
+
+            expected_calls = [
+                mock.call(file, 'r', encoding='utf-8'),
+                mock.call(file, 'r', encoding='utf-8'),
+            ]
+            self.assertEqual(expected_calls, mock_file.call_args_list)
+
+    def test_generator_for_reading_and_filtering_several_coincidence(self):
+        file = "This is the first line\nThis is the second line\nThis is the third line"
+
+        with mock.patch('builtins.open', mock.mock_open(read_data=file)) as mock_file:
+
+            words = ["the", "is"]
+            result = list(generator_for_reading_and_filtering(file, words))
+            self.assertEqual(["This is the first line", "This is the second line",
+                              "This is the third line"], result)
+
+            words = ["this", "line", "first"]
+            result = list(generator_for_reading_and_filtering(file, words))
+            self.assertEqual(["This is the first line", "This is the second line",
+                              "This is the third line"], result)
+
+            expected_calls = [
+                mock.call(file, 'r', encoding='utf-8'),
+                mock.call(file, 'r', encoding='utf-8'),
+            ]
+            self.assertEqual(expected_calls, mock_file.call_args_list)
+
+    def test_generator_for_reading_and_filtering_total_coincidence(self):
+        file = "One\nTwo\nThree"
+        words = ["One", "Two", "Three"]
+
+        with mock.patch('builtins.open', mock.mock_open(read_data=file)) as mock_file:
+
+            result = list(generator_for_reading_and_filtering(file, words))
+            self.assertEqual(["One", "Two", "Three"], result)
+
+        mock_file.assert_called_once_with(file, 'r', encoding='utf-8')

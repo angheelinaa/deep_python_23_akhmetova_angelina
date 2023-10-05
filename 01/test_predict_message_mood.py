@@ -151,3 +151,38 @@ class TestPredictMessageMood(unittest.TestCase):
         self.assertEqual("message expected as instance of str and model expected as "
                          "instance of SomeModel", str(err.exception))
         self.assertEqual(TypeError, type(err.exception))
+
+    def test_predict_message_mood_boundary_thresholds(self):
+        message = "text"
+
+        with mock.patch("predict_message_mood.SomeModel.predict") as mock_somemodel_predict:
+            mock_somemodel_predict.return_value = 0.01
+
+            self.assertEqual("норм", predict_message_mood(message, self.model, bad_thresholds=0.0))
+            self.assertEqual("неуд", predict_message_mood(message, self.model, good_thresholds=1.0))
+            self.assertEqual("норм", predict_message_mood(message, self.model, bad_thresholds=0.0,
+                                                          good_thresholds=1.0))
+
+            expected_calls = [
+                mock.call("text"),
+                mock.call("text"),
+                mock.call("text"),
+            ]
+            self.assertEqual(expected_calls, mock_somemodel_predict.mock_calls)
+
+            mock_somemodel_predict.return_value = 0.99
+
+            self.assertEqual("отл", predict_message_mood(message, self.model, bad_thresholds=0.0))
+            self.assertEqual("норм", predict_message_mood(message, self.model, good_thresholds=1.0))
+            self.assertEqual("норм", predict_message_mood(message, self.model, bad_thresholds=0.0,
+                                                          good_thresholds=1.0))
+
+            expected_calls = [
+                mock.call("text"),
+                mock.call("text"),
+                mock.call("text"),
+                mock.call("text"),
+                mock.call("text"),
+                mock.call("text"),
+            ]
+            self.assertEqual(expected_calls, mock_somemodel_predict.mock_calls)

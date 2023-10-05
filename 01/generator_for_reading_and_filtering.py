@@ -13,6 +13,7 @@ def generator_for_reading_and_filtering(
                 for word in words:
                     if word.lower() in line_lst:
                         yield line.strip()
+                        break
 
     if isinstance(filename, str):
         with open(filename, 'r', encoding='utf-8') as file:
