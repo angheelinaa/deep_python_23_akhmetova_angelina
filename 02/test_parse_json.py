@@ -10,7 +10,6 @@ class TestParseJson(unittest.TestCase):
                                                return_value=None)
 
     def test_parse_json_simple(self):
-
         required_fields = ["key1"]
         keywords = ["word2"]
 
@@ -18,7 +17,7 @@ class TestParseJson(unittest.TestCase):
                                           keyword_callback=self.mock_keyword_callback))
 
         expected_calls = [
-            mock.call("word2"),
+            mock.call("word2", "key1"),
         ]
         self.assertEqual(expected_calls, self.mock_keyword_callback.mock_calls)
 
@@ -46,6 +45,18 @@ class TestParseJson(unittest.TestCase):
 
         self.assertEqual([], self.mock_keyword_callback.mock_calls)
 
+    def test_parse_json_without_callback_function(self):
+        required_fields = ["key1"]
+        keywords = ["word2"]
+
+        with self.assertRaises(TypeError) as err:
+            self.assertEqual(None, parse_json(self.jsn, required_fields, keywords))
+
+        self.assertEqual("missing required keyword_callback function", str(err.exception))
+        self.assertEqual(TypeError, type(err.exception))
+
+        self.assertEqual([], self.mock_keyword_callback.mock_calls)
+
     def test_parse_json_with_several_fields(self):
         required_fields = ["key1", "key2"]
         keywords = ["word2"]
@@ -54,14 +65,14 @@ class TestParseJson(unittest.TestCase):
                                           keyword_callback=self.mock_keyword_callback))
 
         expected_calls = [
-            mock.call("word2"),
-            mock.call("word2"),
+            mock.call("word2", "key1"),
+            mock.call("word2", "key2"),
         ]
         self.assertEqual(expected_calls, self.mock_keyword_callback.mock_calls)
 
     def test_parse_json_no_found_keywords(self):
-        required_fields = ["key1"]
-        keywords = ["word3"]
+        required_fields = ["key1", "key2"]
+        keywords = ["word4"]
 
         self.assertEqual(None, parse_json(self.jsn, required_fields, keywords,
                                           keyword_callback=self.mock_keyword_callback))
@@ -85,3 +96,16 @@ class TestParseJson(unittest.TestCase):
                                           keyword_callback=self.mock_keyword_callback))
 
         self.assertEqual([], self.mock_keyword_callback.mock_calls)
+
+    def test_parse_json_several_keywords(self):
+        required_fields = ["key1"]
+        keywords = ["word2", "word1"]
+
+        self.assertEqual(None, parse_json(self.jsn, required_fields, keywords,
+                                          keyword_callback=self.mock_keyword_callback))
+
+        expected_calls = [
+            mock.call("word2", "key1"),
+            mock.call("word1", "key1"),
+        ]
+        self.assertEqual(expected_calls, self.mock_keyword_callback.mock_calls)

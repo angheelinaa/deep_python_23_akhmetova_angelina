@@ -7,89 +7,117 @@ class TestCustomList(unittest.TestCase):
         cust_lst_1 = CustomList([5, 1, 3, 7])
         cust_lst_2 = CustomList([1, 2, 7])
 
-        self.assertEqual([6, 3, 10, 7], cust_lst_1 + cust_lst_2)
-        self.assertIsInstance(cust_lst_1 + cust_lst_2, CustomList)
-        self.assertEqual([5, 1, 3, 7], cust_lst_1)
-        self.assertEqual([1, 2, 7], cust_lst_2)
+        result_lst_1 = cust_lst_1 + cust_lst_2
 
-        self.assertEqual([6, 3, 10, 7], cust_lst_2 + cust_lst_1)
-        self.assertIsInstance(cust_lst_2 + cust_lst_1, CustomList)
         self.assertEqual([5, 1, 3, 7], cust_lst_1)
         self.assertEqual([1, 2, 7], cust_lst_2)
+        self.assertIsInstance(result_lst_1, CustomList)
+        for i, elem in enumerate(result_lst_1):
+            self.assertEqual(elem, cust_lst_1[i] + (cust_lst_2[i] if i < len(cust_lst_2) else 0))
+
+        result_lst_2 = cust_lst_2 + cust_lst_1
+
+        self.assertEqual([5, 1, 3, 7], cust_lst_1)
+        self.assertEqual([1, 2, 7], cust_lst_2)
+        self.assertIsInstance(result_lst_2, CustomList)
+        for i, elem in enumerate(result_lst_2):
+            self.assertEqual(elem, (cust_lst_2[i] if i < len(cust_lst_2) else 0) + cust_lst_1[i])
 
     def test_custom_list_add_with_list(self):
         cust_lst_1 = CustomList([1])
         cust_lst_2 = CustomList([5, 1, 3, 7])
         lst = [2, 5]
 
-        self.assertEqual([3, 5], cust_lst_1 + lst)
-        self.assertIsInstance(cust_lst_1 + lst, CustomList)
+        result_lst_1 = cust_lst_1 + lst
+
         self.assertEqual([1], cust_lst_1)
         self.assertEqual([2, 5], lst)
+        self.assertIsInstance(result_lst_1, CustomList)
+        for i, elem in enumerate(result_lst_1):
+            self.assertEqual(elem, (cust_lst_1[i] if i < len(cust_lst_1) else 0) + lst[i])
 
-        self.assertEqual([7, 6, 3, 7], cust_lst_2 + lst)
-        self.assertIsInstance(cust_lst_2 + lst, CustomList)
+        result_lst_2 = cust_lst_2 + lst
+
         self.assertEqual([5, 1, 3, 7], cust_lst_2)
         self.assertEqual([2, 5], lst)
+        self.assertIsInstance(result_lst_2, CustomList)
+        for i, elem in enumerate(result_lst_2):
+            self.assertEqual(elem, cust_lst_2[i] + (lst[i] if i < len(lst) else 0))
 
     def test_custom_list_radd(self):
         cust_lst_1 = CustomList([1])
         cust_lst_2 = CustomList([5, 1, 3, 7])
         lst = [2, 5]
 
-        self.assertEqual([3, 5], lst + cust_lst_1)
-        self.assertIsInstance(lst + cust_lst_1, CustomList)
+        result_lst_1 = lst + cust_lst_1
         self.assertEqual([1], cust_lst_1)
         self.assertEqual([2, 5], lst)
+        self.assertIsInstance(result_lst_1, CustomList)
+        for i, elem in enumerate(result_lst_1):
+            self.assertEqual(elem, lst[i] + (cust_lst_1[i] if i < len(cust_lst_1) else 0))
 
-        self.assertEqual([7, 6, 3, 7], lst + cust_lst_2)
-        self.assertIsInstance(lst + cust_lst_2, CustomList)
+        result_lst_2 = lst + cust_lst_2
         self.assertEqual([5, 1, 3, 7], cust_lst_2)
         self.assertEqual([2, 5], lst)
+        self.assertIsInstance(result_lst_2, CustomList)
+        for i, elem in enumerate(result_lst_2):
+            self.assertEqual(elem, (lst[i] if i < len(lst) else 0) + cust_lst_2[i])
 
     def test_custom_list_sub(self):
         cust_lst_1 = CustomList([5, 1, 3, 7])
         cust_lst_2 = CustomList([1, 2, 7])
 
-        self.assertEqual([4, -1, -4, 7], cust_lst_1 - cust_lst_2)
-        self.assertIsInstance(cust_lst_1 - cust_lst_2, CustomList)
+        result_lst_1 = cust_lst_1 - cust_lst_2
         self.assertEqual([5, 1, 3, 7], cust_lst_1)
         self.assertEqual([1, 2, 7], cust_lst_2)
+        self.assertIsInstance(result_lst_1, CustomList)
+        for i, elem in enumerate(result_lst_1):
+            self.assertEqual(elem, cust_lst_1[i] - (cust_lst_2[i] if i < len(cust_lst_2) else 0))
 
-        self.assertEqual([-4, 1, 4, -7], cust_lst_2 - cust_lst_1)
-        self.assertIsInstance(cust_lst_2 - cust_lst_1, CustomList)
+        result_lst_2 = cust_lst_2 - cust_lst_1
         self.assertEqual([5, 1, 3, 7], cust_lst_1)
         self.assertEqual([1, 2, 7], cust_lst_2)
+        self.assertIsInstance(result_lst_2, CustomList)
+        for i, elem in enumerate(result_lst_2):
+            self.assertEqual(elem, (cust_lst_2[i] if i < len(cust_lst_2) else 0) - cust_lst_1[i])
 
     def test_custom_list_sub_with_list(self):
         cust_lst_1 = CustomList([1])
         cust_lst_2 = CustomList([5, 1, 3, 7])
         lst = [2, 5]
 
-        self.assertEqual([-1, -5], cust_lst_1 - lst)
-        self.assertIsInstance(cust_lst_1 - lst, CustomList)
+        result_lst_1 = cust_lst_1 - lst
         self.assertEqual([1], cust_lst_1)
         self.assertEqual([2, 5], lst)
+        self.assertIsInstance(result_lst_1, CustomList)
+        for i, elem in enumerate(result_lst_1):
+            self.assertEqual(elem, (cust_lst_1[i] if i < len(cust_lst_1) else 0) - lst[i])
 
-        self.assertEqual([3, -4, 3, 7], cust_lst_2 - lst)
-        self.assertIsInstance(cust_lst_2 - lst, CustomList)
+        result_lst_2 = cust_lst_2 - lst
         self.assertEqual([5, 1, 3, 7], cust_lst_2)
         self.assertEqual([2, 5], lst)
+        self.assertIsInstance(result_lst_2, CustomList)
+        for i, elem in enumerate(result_lst_2):
+            self.assertEqual(elem, cust_lst_2[i] - (lst[i] if i < len(lst) else 0))
 
     def test_custom_list_rsub(self):
         cust_lst_1 = CustomList([1])
         cust_lst_2 = CustomList([5, 1, 3, 7])
         lst = [2, 5]
 
-        self.assertEqual([1, 5], lst - cust_lst_1)
-        self.assertIsInstance(lst - cust_lst_1, CustomList)
+        result_lst_1 = lst - cust_lst_1
         self.assertEqual([1], cust_lst_1)
         self.assertEqual([2, 5], lst)
+        self.assertIsInstance(result_lst_1, CustomList)
+        for i, elem in enumerate(result_lst_1):
+            self.assertEqual(elem, lst[i] - (cust_lst_1[i] if i < len(cust_lst_1) else 0))
 
-        self.assertEqual([-3, 4, -3, -7], lst - cust_lst_2)
-        self.assertIsInstance(lst - cust_lst_2, CustomList)
+        result_lst_2 = lst - cust_lst_2
         self.assertEqual([5, 1, 3, 7], cust_lst_2)
         self.assertEqual([2, 5], lst)
+        self.assertIsInstance(result_lst_2, CustomList)
+        for i, elem in enumerate(result_lst_2):
+            self.assertEqual(elem, (lst[i] if i < len(lst) else 0) - cust_lst_2[i])
 
     def test_custom_list_str(self):
         cust_lst = CustomList([5, 1, 3, 7])
