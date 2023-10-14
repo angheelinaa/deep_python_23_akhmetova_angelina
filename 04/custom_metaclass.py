@@ -6,8 +6,9 @@ class CustomMeta(type):
         cls = super().__new__(mcs, name, bases, custom_classdict, **kwargs)
         return cls
 
-    def custom_setattr(cls, key, value):
-        object.__setattr__(cls, (key if key.startswith("__") and key.endswith("__")
+    @staticmethod
+    def custom_setattr(obj, key, value):
+        object.__setattr__(obj, (key if key.startswith("__") and key.endswith("__")
                                  else ("custom_" + key)), value)
 
     def __setattr__(cls, key, value):
