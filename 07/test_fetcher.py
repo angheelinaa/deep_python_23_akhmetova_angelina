@@ -1,7 +1,6 @@
 import unittest
 import json
 import io
-import asyncio
 from contextlib import redirect_stdout
 from unittest import mock
 from fetcher import batch_fetch, fetch_url, url_parser
@@ -31,7 +30,6 @@ class TestFetcher(unittest.IsolatedAsyncioTestCase):
                          "<title>Простая страница </title></head>" \
                          "<body>Контент этой страницы </body></html>"
         common_words = {'простая': 1, 'страница': 1, 'контент': 1, 'этой': 1}
-        sem = asyncio.Semaphore(10)
 
         mock_resp = mock.AsyncMock()
         mock_resp.status = 200
@@ -40,7 +38,7 @@ class TestFetcher(unittest.IsolatedAsyncioTestCase):
         with mock.patch('fetcher.aiohttp.ClientSession.get') as mock_session:
             mock_session.return_value.__aenter__.return_value = mock_resp
             with redirect_stdout(io.StringIO()) as stdout:
-                await fetch_url(url, sem)
+                await fetch_url(url)
 
         self.assertEqual(f"{url}: {json.dumps(common_words, ensure_ascii=False)}",
                          stdout.getvalue().strip())
@@ -51,17 +49,14 @@ class TestFetcher(unittest.IsolatedAsyncioTestCase):
     @mock.patch('fetcher.aiohttp.ClientSession.get')
     async def test_fetch_url_not_found(self, mock_session):
         url = "https://example.com"
-        sem = asyncio.Semaphore(10)
 
         mock_resp = mock.AsyncMock()
         mock_resp.status = 404
         mock_session.return_value.__aenter__.return_value = mock_resp
 
-        with redirect_stdout(io.StringIO()) as stdout:
-            with self.assertRaises(Exception):
-                await fetch_url(url, sem)
+        with self.assertRaises(Exception):
+            await fetch_url(url)
 
-        self.assertEqual(f"url '{url}' not found", stdout.getvalue().strip())
         mock_resp.assert_not_awaited()
         mock_session.assert_called_once_with(url)
 

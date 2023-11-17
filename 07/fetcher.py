@@ -23,26 +23,42 @@ async def url_parser(url, resp):
     print(f"{url}: {json.dumps(common_words, ensure_ascii=False)}")
 
 
-async def fetch_url(url, sem):
+async def fetch_url(url):
     async with aiohttp.ClientSession() as session:
-        async with sem:
-            async with session.get(url) as resp:
-                if resp.status != 200:
-                    print(f"url '{url}' not found")
-                    raise Exception
-                await url_parser(url, resp)
+        async with session.get(url) as resp:
+            if resp.status != 200:
+                raise Exception
+            await url_parser(url, resp)
+
+
+async def fetch_worker(que):
+    while True:
+        url = await que.get()
+
+        try:
+            await fetch_url(url)
+        except Exception:
+            print(f"url '{url}' not found")
+        finally:
+            que.task_done()
 
 
 async def batch_fetch(number, filename):
-    tasks = []
-    sem = asyncio.Semaphore(number)
+    que = asyncio.Queue(maxsize=number)
+
+    workers = [
+        asyncio.create_task(fetch_worker(que))
+        for _ in range(number)
+    ]
 
     async with aiofiles.open(filename, 'r', encoding='UTF-8') as file:
         async for url in file:
-            task = asyncio.create_task(fetch_url(url.strip(), sem))
-            tasks.append(task)
+            await que.put(url.strip())
 
-    await asyncio.gather(*tasks, return_exceptions=True)
+    await que.join()
+
+    for worker in workers:
+        worker.cancel()
 
 
 if __name__ == "__main__":
