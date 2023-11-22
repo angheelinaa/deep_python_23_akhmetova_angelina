@@ -61,3 +61,44 @@ class TestLRUCache(unittest.TestCase):
 
         # if node is tail
         self.assertEqual("val0", cache.get(0))
+
+    def test_LRU_cache(self):
+        cache = LRUCache(2)
+
+        cache.set("k1", "val1")
+        cache.set("k2", "val2")
+
+        self.assertEqual(None, cache.get("k3"))
+        self.assertEqual("val2", cache.get("k2"))
+        self.assertEqual("val1", cache.get("k1"))
+
+        cache.set("k3", "val3")
+
+        self.assertEqual("val3", cache.get("k3"))
+        self.assertEqual(None, cache.get("k2"))
+        self.assertEqual("val1", cache.get("k1"))
+
+    def test_LRU_cache_limit_is_one(self):
+        cache = LRUCache(1)
+
+        cache.set("k1", "val1")
+
+        self.assertEqual("val1", cache.get("k1"))
+        self.assertEqual(None, cache.get("k2"))
+
+        cache.set("k2", "val2")
+
+        self.assertEqual(None, cache.get("k1"))
+        self.assertEqual("val2", cache.get("k2"))
+
+    def test_LRU_cache_change_value(self):
+        cache = LRUCache(10)
+
+        for i in range(10):
+            cache.set(f"k{i}", f"val{i}")
+
+        cache.set("k0", "newval0")
+        cache.set("k11", "val11")
+
+        self.assertEqual(None, cache.get("k1"))
+        self.assertEqual("newval0", cache.get("k0"))
